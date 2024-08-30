@@ -1,8 +1,9 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "./components/Table";
+import DataTable from "./components/Table";
 import { XIcon } from "lucide-react";
+import Create from "./components/Create";
 
 type Product = {
 	id: string;
@@ -72,7 +73,8 @@ export const columns: ColumnDef<Product>[] = [
 
 export default function Form() {
 	return (
-		<div className="p-4">
+		<div className="p-4 flex flex-col gap-4">
+			<Create />
 			<DataTable columns={columns} data={produtos} />
 		</div>
 	);

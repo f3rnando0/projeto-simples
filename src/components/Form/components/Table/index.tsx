@@ -20,7 +20,7 @@ interface DataTableProps<TData, TValue> {
 	data: TData[];
 }
 
-export function DataTable<TData, TValue>({
+export default function DataTable<TData, TValue>({
 	columns,
 	data,
 }: DataTableProps<TData, TValue>) {
@@ -31,12 +31,7 @@ export function DataTable<TData, TValue>({
 	});
 
 	return (
-		<>
-			<div className="mb-2">
-				<span className="text-xl font-pretty">
-					Descrição do Produto/Serviços
-				</span>
-			</div>
+		<div>
 			<div className="rounded-md border">
 				<Table>
 					<TableHeader>
@@ -87,6 +82,6 @@ export function DataTable<TData, TValue>({
 					</TableBody>
 				</Table>
 			</div>
-		</>
+		</div>
 	);
 }
