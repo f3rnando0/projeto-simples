@@ -24,6 +24,9 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { formSchema } from "./utils/formSchema";
+import { useProductsStore } from "@/components/Form/store";
+import { v4 as uuidv4 } from 'uuid'
+import { MoneyInput } from "@/components/ui/input-money";
 
 export default function CreateForm() {
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -41,8 +44,11 @@ export default function CreateForm() {
 	});
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
-		console.log(values);
+		const { amount, peso, valor, valor_unitario, volume, descricao, prazo_maximo, prazo_minimo } = values;
+
+		useProductsStore.getState().dispatch.updateProducts({ id: uuidv4(), amount, peso, valor, valor_unitario, volume, descricao, prazo_maximo, prazo_minimo });
 	}
+
 
 	return (
 		<Form {...form}>
@@ -62,19 +68,7 @@ export default function CreateForm() {
 								</FormItem>
 							)}
 						/>
-						<FormField
-							control={form.control}
-							name="valor_unitario"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Valor Unitário</FormLabel>
-									<FormControl>
-										<Input type="number" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+						<MoneyInput form={form} label="Valor Unitário" name="valor_unitario" />
 						<FormField
 							control={form.control}
 							name="peso"
@@ -95,25 +89,16 @@ export default function CreateForm() {
 								<FormItem>
 									<FormLabel>Volume</FormLabel>
 									<FormControl>
-										<Input type="number" {...field} />
+										<Input
+											type="number"
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
 							)}
 						/>
-						<FormField
-							control={form.control}
-							name="valor"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Valor</FormLabel>
-									<FormControl>
-										<Input type="number" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+						<MoneyInput form={form} label="Valor" name="valor" />
 					</div>
 					<div className="h-20 flex flex-row gap-4 items-end">
 						<FormField
@@ -158,7 +143,7 @@ export default function CreateForm() {
 												selected={field.value}
 												onSelect={field.onChange}
 												disabled={(date) =>
-													date > new Date() || date < new Date("1900-01-01")
+													date < new Date() || date < new Date("1900-01-01")
 												}
 												initialFocus
 											/>
@@ -197,7 +182,7 @@ export default function CreateForm() {
 												selected={field.value}
 												onSelect={field.onChange}
 												disabled={(date) =>
-													date > new Date() || date < new Date("1900-01-01")
+													date < new Date() || date < new Date("1900-01-01")
 												}
 												initialFocus
 											/>

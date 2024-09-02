@@ -1,0 +1,77 @@
+"use client";
+import { useReducer } from "react";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
+import { Input } from "../ui/input";
+import type { UseFormReturn } from "react-hook-form";
+
+type TextInputProps = {
+  // biome-ignore lint/suspicious/noExplicitAny: <meaningless>
+  form: UseFormReturn<any>;
+  name: string;
+  label: string;
+  placeholder?: string;
+};
+
+const moneyFormatter = Intl.NumberFormat("pt-BR", {
+  currency: "BRL",
+  currencyDisplay: "symbol",
+  currencySign: "standard",
+  style: "currency",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+export const MoneyInput = (props: TextInputProps) => {
+  const initialValue = props.form.getValues()[props.name]
+    ? moneyFormatter.format(props.form.getValues()[props.name])
+    : "R$ 0,00";
+
+  // biome-ignore lint/suspicious/noExplicitAny: <meaningless>
+  const [value, setValue] = useReducer((_: any, next: string) => {
+    const digits = next.replace(/\D/g, "");
+    return moneyFormatter.format(Number(digits) / 100);
+  }, initialValue);
+
+  // biome-ignore lint/complexity/noBannedTypes: <meaningless>
+  function handleChange(realChangeFn: Function, formattedValue: string) {
+    const digits = formattedValue.replace(/\D/g, "");
+    const realValue = Number(digits) / 100;
+    realChangeFn(realValue);
+  }
+
+  return (
+    <FormField
+      control={props.form.control}
+      name={props.name}
+      render={({ field }) => {
+        field.value = value;
+        const _change = field.onChange;
+
+        return (
+          <FormItem>
+            <FormLabel>{props.label}</FormLabel>
+            <FormControl>
+              <Input
+                placeholder={props.placeholder}
+                type="text"
+                {...field}
+                onChange={(ev) => {
+                  setValue(ev.target.value);
+                  handleChange(_change, ev.target.value);
+                }}
+                value={value}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
+    />
+  );
+}

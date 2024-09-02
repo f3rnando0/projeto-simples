@@ -1,6 +1,6 @@
 "use client";
 
-import CreateForm from "./components/CreateForm/index";
+import CreateForm from "./components/Form";
 
 export default function Create() {
 	return (
