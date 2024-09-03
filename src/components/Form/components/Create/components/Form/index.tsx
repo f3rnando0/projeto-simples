@@ -25,30 +25,81 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { formSchema } from "./utils/formSchema";
 import { useProductsStore } from "@/components/Form/store";
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from "uuid";
 import { MoneyInput } from "@/components/ui/input-money";
+import { useState } from "react";
 
 export default function CreateForm() {
+	const [pesoValue, setPesoValue] = useState("0 kg");
+	const [volumeValue, setVolumeValue] = useState("0 uni");
+	const [quantidadeValue, setQuantidadeValue] = useState("0 uni");
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			amount: 0,
 			valor_unitario: 0,
 			valor: 0,
-			peso: 0,
-			volume: 0,
 			prazo_maximo: undefined,
 			prazo_minimo: undefined,
 			descricao: undefined,
 		},
+		shouldUnregister: false,
 	});
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
-		const { amount, peso, valor, valor_unitario, volume, descricao, prazo_maximo, prazo_minimo } = values;
+		const {
+			amount,
+			peso,
+			valor,
+			valor_unitario,
+			volume,
+			descricao,
+			prazo_maximo,
+			prazo_minimo,
+		} = values;
 
-		useProductsStore.getState().dispatch.updateProducts({ id: uuidv4(), amount, peso, valor, valor_unitario, volume, descricao, prazo_maximo, prazo_minimo });
+		useProductsStore.getState().dispatch.updateProducts({
+			id: uuidv4(),
+			amount,
+			peso,
+			valor,
+			valor_unitario,
+			volume,
+			descricao,
+			prazo_maximo,
+			prazo_minimo,
+		});
 	}
 
+	const handlePesoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.value === "") {
+			setPesoValue("0 kg");
+			return form.setValue("peso", 0);
+		}
+		const parsed = Number.parseInt(e.target.value.replace(/\D/g, ""), 10);
+		form.setValue("peso", parsed);
+		setPesoValue(parsed ? `${parsed} kg` : "");
+	};
+
+	const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.value === "") {
+			setVolumeValue("0 uni");
+			return form.setValue("volume", 0);
+		}
+		const parsed = Number.parseInt(e.target.value.replace(/\D/g, ""), 10);
+		form.setValue("volume", parsed);
+		setVolumeValue(parsed ? `${parsed} uni` : "");
+	};
+
+	const handleQuantidadeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.value === "") {
+			setQuantidadeValue("0 uni");
+			return form.setValue("amount", 0);
+		}
+		const parsed = Number.parseInt(e.target.value.replace(/\D/g, ""), 10);
+		form.setValue("amount", parsed);
+		setQuantidadeValue(parsed ? `${parsed} uni` : "");
+	};
 
 	return (
 		<Form {...form}>
@@ -62,13 +113,23 @@ export default function CreateForm() {
 								<FormItem>
 									<FormLabel>Quantidade</FormLabel>
 									<FormControl>
-										<Input type="number" {...field} />
+										<Input
+											type="text"
+											{...field}
+											{...form.register("amount")}
+											value={quantidadeValue}
+											onChange={handleQuantidadeChange}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
 							)}
 						/>
-						<MoneyInput form={form} label="Valor Unitário" name="valor_unitario" />
+						<MoneyInput
+							form={form}
+							label="Valor Unitário"
+							name="valor_unitario"
+						/>
 						<FormField
 							control={form.control}
 							name="peso"
@@ -76,7 +137,13 @@ export default function CreateForm() {
 								<FormItem>
 									<FormLabel>Peso</FormLabel>
 									<FormControl>
-										<Input type="number" {...field} />
+										<Input
+											type="text"
+											{...field}
+											{...form.register("peso")}
+											value={pesoValue}
+											onChange={handlePesoChange}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -90,8 +157,11 @@ export default function CreateForm() {
 									<FormLabel>Volume</FormLabel>
 									<FormControl>
 										<Input
-											type="number"
+											type="text"
 											{...field}
+											{...form.register("volume")}
+											value={volumeValue}
+											onChange={handleVolumeChange}
 										/>
 									</FormControl>
 									<FormMessage />

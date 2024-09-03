@@ -18,7 +18,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html lang="en" className={`${outfit.className}`}>
-			<body className="dark">{children}</body>
+			<body>{children}</body>
 		</html>
 	);
 }
