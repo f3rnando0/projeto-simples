@@ -27,11 +27,12 @@ import { formSchema } from "./utils/formSchema";
 import { useProductsStore } from "@/components/Form/store";
 import { v4 as uuidv4 } from "uuid";
 import { MoneyInput } from "@/components/ui/input-money";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { moneyFormatter } from "@/components/utils/formatter";
 
 export default function CreateForm() {
-	const { toast } = useToast()
+	const { toast } = useToast();
 
 	const [pesoValue, setPesoValue] = useState("0 kg");
 	const [volumeValue, setVolumeValue] = useState("0 uni");
@@ -40,6 +41,7 @@ export default function CreateForm() {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
+			amount: 0,
 			valor_unitario: 0,
 			valor: 0,
 			prazo_maximo: undefined,
@@ -48,6 +50,23 @@ export default function CreateForm() {
 		},
 		shouldUnregister: false,
 	});
+
+	const watcherAmount = form.watch("amount").toString();
+	const watcherUnitValue = form.watch("valor_unitario");
+
+	const valorTotal = useMemo(() => {
+		return Number.parseInt(watcherAmount.replace(" uni", "")) * watcherUnitValue;
+	}, [watcherAmount, watcherUnitValue]);
+
+	const [valorValue, setValorValue] = useState(valorTotal);
+
+	useEffect(() => {
+		setValorValue(valorTotal);
+	}, [valorTotal])
+
+	useEffect(() => {
+		form.setValue("valor", valorValue);
+	}, [valorValue, form.setValue])
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
 		const {
@@ -102,6 +121,13 @@ export default function CreateForm() {
 		const parsed = Number.parseInt(e.target.value.replace(/\D/g, ""), 10);
 		form.setValue("amount", parsed);
 		setQuantidadeValue(parsed ? `${parsed} uni` : "");
+	};
+
+	const handleValorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const digits = e.target.value.replace(/\D/g, "");
+		const realValue = Number(digits) / 100;
+
+		setValorValue(realValue);
 	};
 
 	return (
@@ -171,7 +197,25 @@ export default function CreateForm() {
 								</FormItem>
 							)}
 						/>
-						<MoneyInput form={form} label="Valor" name="valor" />
+						<FormField
+							control={form.control}
+							name="valor"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Total dos Produtos/Serviços</FormLabel>
+									<FormControl>
+										<Input
+											type="text"
+											{...field}
+											{...form.register("valor")}
+											value={`${moneyFormatter.format(valorValue)}`}
+											onChange={handleValorChange}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 					</div>
 					<div className="h-20 flex flex-row gap-4 items-end">
 						<FormField

@@ -14,15 +14,7 @@ import type { z } from "zod";
 import { MoneyInput } from "@/components/ui/input-money";
 import { useEffect, useMemo, useState } from "react";
 import { useProductsStore } from "@/components/Form/store";
-
-const moneyFormatter = Intl.NumberFormat("pt-BR", {
-	currency: "BRL",
-	currencyDisplay: "symbol",
-	currencySign: "standard",
-	style: "currency",
-	minimumFractionDigits: 2,
-	maximumFractionDigits: 2,
-});
+import { moneyFormatter } from "@/components/utils/formatter";
 
 export default function MoreInformationForm() {
 	const products = useProductsStore((state) => state.productData.products);
