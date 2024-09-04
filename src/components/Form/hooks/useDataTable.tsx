@@ -40,7 +40,7 @@ export const columns: ColumnDef<Product>[] = [
 		accessorKey: "valor",
 		header: "Valor",
 		cell: ({ row }) => {
-			const valor: string = row.getValue("volume");
+			const valor: string = row.getValue("valor");
 			const value = Number.parseInt(valor, 10);
 			return <div>{moneyFormatter.format(value)}</div>;
 		},

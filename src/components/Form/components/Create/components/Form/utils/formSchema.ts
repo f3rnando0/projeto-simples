@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { string, z } from "zod";
 
 export const formSchema = z.object({
 	amount: z.preprocess(
@@ -14,7 +14,18 @@ export const formSchema = z.object({
 			.positive({ message: "O valor precisa ser positivo" }),
 	),
 	valor: z.preprocess(
-		(a) => Number.parseInt(a as string, 10),
+		(a) => {
+			if (typeof a === "string") {
+				const b = (a as string)
+					.replace("R$", "")
+					.replaceAll(".", "")
+					.replaceAll(",", "")
+					.trim();
+				return Number.parseInt(b as string, 10) / 100;
+			}
+
+			return Number.parseInt(a as string, 10);
+		},
 		z
 			.number({ message: "O valor precisa ser um número" })
 			.positive({ message: "O valor precisa ser positivo" }),

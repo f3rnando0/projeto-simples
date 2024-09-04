@@ -66,15 +66,15 @@ export default function CreateForm() {
 
 	useEffect(() => {
 		form.setValue("valor", valorValue);
-	}, [valorValue, form.setValue])
+	}, [valorValue, form.setValue]);
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
 		const {
 			amount,
 			peso,
-			valor,
 			valor_unitario,
 			volume,
+			valor,
 			descricao,
 			prazo_maximo,
 			prazo_minimo,
@@ -91,6 +91,12 @@ export default function CreateForm() {
 			prazo_maximo,
 			prazo_minimo,
 		});
+
+		toast({
+			title: "Produto/Serviço criado",
+			description: format(Date.now(), "PPPpp", { locale: ptBR }),
+			duration: 2500,
+		})
 	}
 
 	const handlePesoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -202,13 +208,13 @@ export default function CreateForm() {
 							name="valor"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Total dos Produtos/Serviços</FormLabel>
+									<FormLabel>Valor</FormLabel>
 									<FormControl>
 										<Input
 											type="text"
 											{...field}
 											{...form.register("valor")}
-											value={`${moneyFormatter.format(valorValue)}`}
+											value={moneyFormatter.format(valorValue)}
 											onChange={handleValorChange}
 										/>
 									</FormControl>
@@ -310,12 +316,7 @@ export default function CreateForm() {
 							)}
 						/>
 						<div>
-							<Button type="submit" size="icon" onClick={() => {
-								toast({
-									title: "Produto/Serviço criado",
-									description: format(Date.now(), "PPPpp", { locale: ptBR }),
-								})
-							}}>
+							<Button type="submit" size="icon">
 								<PlusIcon />
 							</Button>
 						</div>
