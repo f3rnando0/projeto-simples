@@ -28,8 +28,11 @@ import { useProductsStore } from "@/components/Form/store";
 import { v4 as uuidv4 } from "uuid";
 import { MoneyInput } from "@/components/ui/input-money";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CreateForm() {
+	const { toast } = useToast()
+
 	const [pesoValue, setPesoValue] = useState("0 kg");
 	const [volumeValue, setVolumeValue] = useState("0 uni");
 	const [quantidadeValue, setQuantidadeValue] = useState("0 uni");
@@ -263,13 +266,18 @@ export default function CreateForm() {
 							)}
 						/>
 						<div>
-							<Button type="submit" size="icon">
+							<Button type="submit" size="icon" onClick={() => {
+								toast({
+									title: "Produto/Serviço criado",
+									description: format(Date.now(), "PPPpp", { locale: ptBR }),
+								})
+							}}>
 								<PlusIcon />
 							</Button>
 						</div>
 					</div>
 				</div>
 			</form>
-		</Form>
+		</Form >
 	);
 }
