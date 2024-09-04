@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 
 import { Outfit } from "next/font/google";
 import type { Metadata } from "next";
+import { Toaster } from "@/components/ui/toaster";
 
 const outfit = Outfit({
 	variable: "--font-outfit",
@@ -18,7 +19,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html lang="en" className={`${outfit.className}`}>
-			<body>{children}</body>
+			<body>
+				<main>{children}</main>
+				<Toaster />
+			</body>
 		</html>
 	);
 }
