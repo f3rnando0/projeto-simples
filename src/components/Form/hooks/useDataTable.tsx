@@ -3,15 +3,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import RemoveProduct from "../components/Table/components/RemoveProduct";
-
-const moneyFormatter = Intl.NumberFormat("pt-BR", {
-	currency: "BRL",
-	currencyDisplay: "symbol",
-	currencySign: "standard",
-	style: "currency",
-	minimumFractionDigits: 2,
-	maximumFractionDigits: 2,
-});
+import { moneyFormatter } from "@/lib/formatter";
 
 export const columns: ColumnDef<Product>[] = [
 	{

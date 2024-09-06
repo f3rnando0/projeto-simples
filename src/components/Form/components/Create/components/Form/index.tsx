@@ -29,7 +29,7 @@ import { v4 as uuidv4 } from "uuid";
 import { MoneyInput } from "@/components/ui/input-money";
 import { useEffect, useMemo, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { moneyFormatter } from "@/components/utils/formatter";
+import { moneyFormatter } from "@/lib/formatter";
 
 export default function CreateForm() {
 	const { toast } = useToast();
