@@ -8,13 +8,13 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 
 type TextInputProps = {
   form: UseFormReturn<any>;
   name: string;
   label: string;
-  placeholder: string;
+  placeholder?: string;
 };
 
 const moneyFormatter = Intl.NumberFormat("pt-BR", {
