@@ -69,7 +69,7 @@ export const columns: ColumnDef<Product>[] = [
 		accessorKey: "prazo_maximo",
 		header: "Prazo máximo",
 		cell: ({ row }) => {
-			const date: string = row.getValue("prazo_minimo");
+			const date: string = row.getValue("prazo_maximo");
 			if (date) {
 				const formatted = format(date, "PPP", { locale: ptBR });
 				return <div>{formatted}</div>;

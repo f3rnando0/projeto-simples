@@ -1,7 +1,7 @@
 "use client";
 
 import type { z } from "zod";
-import { FormProvider, useForm, useWatch } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -19,6 +19,9 @@ import DinheiroInput from "../../../Inputs/Dinheiro";
 import PesoInput from "../../../Inputs/Peso";
 import TextInput from "../../../Inputs/TextInput";
 import { watchActions } from '@/components/Form/components/Inputs/types'
+import { FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Popover, PopoverTrigger } from "@radix-ui/react-popover";
+import { PopoverContent } from "@/components/ui/popover";
 
 export default function CreateForm() {
 	const { toast } = useToast();
@@ -33,7 +36,7 @@ export default function CreateForm() {
 			peso: 0,
 			prazo_maximo: undefined,
 			prazo_minimo: undefined,
-			descricao: undefined,
+			descricao: "",
 		},
 	});
 
@@ -66,12 +69,13 @@ export default function CreateForm() {
 			description: format(Date.now(), "PPPpp", { locale: ptBR }),
 			duration: 2500,
 		})
+		methods.reset();
 	}
 
 	return (
 		<FormProvider {...methods}>
 			<form onSubmit={methods.handleSubmit(onSubmit)}>
-				<div className="flex flex-col">
+				<div className="flex flex-col gap-2">
 					<div className="w-full flex gap-4">
 						<div className="flex flex-col gap-2">
 							<Label htmlFor="amount">Quantidade</Label>
@@ -102,14 +106,103 @@ export default function CreateForm() {
 							<DinheiroInput<typeof formSchema>
 								name="valor"
 								watchValues={["amount", "valor_unitario"]}
-								watchAction={watchActions.AMOUNTxUNIT}
+								watchAction={watchActions.AmountXUnit}
 							/>
 						</div>
 					</div>
-					<div className="flex flex-row">
+					<div className="flex flex-row gap-4 items-center">
 						<div className="flex flex-col gap-2 w-80">
 							<Label htmlFor="descricao">Descrição</Label>
 							<TextInput<typeof formSchema> name="descricao" />
+						</div>
+						<div className="flex flex-col gap-2">
+							<FormField
+								control={methods.control}
+								name="prazo_minimo"
+								render={({ field }) => (
+									<FormItem className="flex flex-col">
+										<Label>Prazo mínimo</Label>
+										<Popover>
+											<PopoverTrigger asChild>
+												<FormControl>
+													<Button
+														variant={"outline"}
+														className={cn(
+															"w-[240px] pl-3 text-left font-normal",
+															!field.value && "text-muted-foreground"
+														)}
+													>
+														{field.value ? (
+															format(field.value, "PPP", { locale: ptBR })
+														) : (
+															<span>Escolha uma data</span>
+														)}
+														<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+													</Button>
+												</FormControl>
+											</PopoverTrigger>
+											<PopoverContent className="w-auto p-0" align="start">
+												<Calendar
+													mode="single"
+													selected={field.value}
+													onSelect={field.onChange}
+													disabled={(date) =>
+														date < new Date() || date < new Date("1900-01-01")
+													}
+													initialFocus
+												/>
+											</PopoverContent>
+										</Popover>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</div>
+						<div className="flex flex-col gap-2">
+							<FormField
+								control={methods.control}
+								name="prazo_maximo"
+								render={({ field }) => (
+									<FormItem className="flex flex-col">
+										<Label>Prazo máximo</Label>
+										<Popover>
+											<PopoverTrigger asChild>
+												<FormControl>
+													<Button
+														variant={"outline"}
+														className={cn(
+															"w-[240px] pl-3 text-left font-normal",
+															!field.value && "text-muted-foreground"
+														)}
+													>
+														{field.value ? (
+															format(field.value, "PPP", { locale: ptBR })
+														) : (
+															<span>Escolha uma data</span>
+														)}
+														<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+													</Button>
+												</FormControl>
+											</PopoverTrigger>
+											<PopoverContent className="w-auto p-0" align="start">
+												<Calendar
+													mode="single"
+													selected={field.value}
+													onSelect={field.onChange}
+													disabled={(date) =>
+														date < new Date() || date < new Date("1900-01-01")
+													}
+													initialFocus
+												/>
+											</PopoverContent>
+										</Popover>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</div>
+						<div className="pt-8">
+							<Button size="icon"><PlusIcon /></Button>
 						</div>
 					</div>
 				</div>

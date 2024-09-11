@@ -1,18 +1,15 @@
-import { Form, FormProvider, type SubmitHandler, useForm, useWatch } from "react-hook-form";
+import { FormProvider, type SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formSchema } from "../utils/formSchema";
 import type { z } from "zod";
-import { useProductsStore } from "@/components/Form/store";
 import UnidadeInput from "../../Inputs/Unidade";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import PesoInput from "../../Inputs/Peso";
 import DinheiroInput from "../../Inputs/Dinheiro";
 import TextInput from "../../Inputs/TextInput";
+import { watchActions } from "../../Inputs/types";
 
 export default function MoreInformationForm() {
-	const products = useProductsStore((state) => state.productData.products);
-
 	const methods = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -37,8 +34,28 @@ export default function MoreInformationForm() {
 				<div className="flex flex-col gap-4">
 					<div className="flex flex-row gap-4">
 						<div className="flex flex-col gap-2">
-							<Label htmlFor="total_volume">Volume Total</Label>
-							<UnidadeInput name="total_volume" />
+							<Label htmlFor="valor_frete">Valor do Frete</Label>
+							<DinheiroInput<typeof formSchema> name="valor_frete" />
+						</div>
+						<div className="flex flex-col gap-2">
+							<Label htmlFor="desconto">Desconto</Label>
+							<DinheiroInput<typeof formSchema> name="desconto" />
+						</div>
+						<div className="flex flex-col gap-2">
+							<Label htmlFor="total_produtos">Total dos Produtos/Serviços</Label>
+							<DinheiroInput<typeof formSchema> name="total_produtos" watchAction={watchActions.WholeProductValues} />
+						</div>
+						<div className="flex flex-col gap-2">
+							<Label htmlFor="total_produtos">Total da Nota</Label>
+							<DinheiroInput<typeof formSchema> name="total_nota" watchValues={["total_produtos", "valor_frete", "desconto"]} watchAction={watchActions.WholeNotaValue} />
+						</div>
+						<div className="flex flex-col gap-2">
+							<Label htmlFor="total_produtos">Peso Total</Label>
+							<PesoInput<typeof formSchema> name="total_peso" watchAction={watchActions.WholePesoValue} />
+						</div>
+						<div className="flex flex-col gap-2">
+							<Label htmlFor="total_produtos">Volume Total</Label>
+							<UnidadeInput<typeof formSchema> name="total_volume" watchAction={watchActions.WholeVolumeValue} />
 						</div>
 					</div>
 					<div className="flex flex-row gap-4 w-full">
@@ -51,7 +68,6 @@ export default function MoreInformationForm() {
 							<TextInput name="obs" />
 						</div>
 					</div>
-					<Button type="submit">Submit</Button>
 				</div>
 			</form>
 		</FormProvider>
